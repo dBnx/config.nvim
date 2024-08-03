@@ -581,7 +581,15 @@ require('lazy').setup({
         -- But for many setups, the LSP (`tsserver`) will work just fine
         -- tsserver = {},
         --
-
+        rust_analyzer = {
+          settings = {
+            ['rust-analyzer'] = {
+              checkOnSave = {
+                command = 'clippy',
+              },
+            },
+          },
+        },
         lua_ls = {
           -- cmd = {...},
           -- filetypes = { ...},
@@ -787,16 +795,16 @@ require('lazy').setup({
     -- change the command in the config to whatever the name of that colorscheme is.
     --
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-    'folke/tokyonight.nvim',
+    'mofiqul/vscode.nvim',
     priority = 1000, -- Make sure to load this before all the other start plugins.
     init = function()
       -- Load the colorscheme here.
-      -- Like many other themes, this one has different styles, and you could load
-      -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-night'
+      -- Like many other themes, this one has different styles
+      vim.cmd.colorscheme 'vscode'
 
       -- You can configure highlights by doing something like:
-      vim.cmd.hi 'Comment gui=none'
+      vim.cmd.hi 'Comment gui=NONE'
+      vim.api.nvim_set_hl(0, 'Normal', { bg = 'NONE' })
     end,
   },
 
@@ -844,7 +852,40 @@ require('lazy').setup({
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+      ensure_installed = {
+        'bash',
+        'c',
+        'diff',
+        'html',
+        'lua',
+        'luadoc',
+        'markdown',
+        'markdown_inline',
+        'rust',
+        'capnp',
+        'cpp',
+        'fish',
+        'cmake',
+        'make',
+        'commonlisp',
+        'cuda',
+        'diff',
+        'dockerfile',
+        'gdscript',
+        'gitcommit',
+        'gitignore',
+        'git_config',
+        'git_rebase',
+        'gitattributes',
+        'glsl',
+        'http',
+        'ini',
+        'json',
+        'scala',
+        'query',
+        'vim',
+        'vimdoc',
+      },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -870,6 +911,47 @@ require('lazy').setup({
       --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
     end,
   },
+  {
+    'olimorris/codecompanion.nvim',
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'nvim-treesitter/nvim-treesitter',
+      'nvim-telescope/telescope.nvim', -- Optional
+      {
+        'stevearc/dressing.nvim', -- Optional: Improves the default Neovim UI
+      },
+    },
+    config = true,
+    opts = {
+      adapters = {
+        -- TODO: Does not work
+        -- anthropic = "anthropic",
+        -- ollama = 'ollama',
+        -- openai = "openai",
+        ollama = function()
+          return require('codecompanion.adapters').use('ollama', {
+            schema = {
+              model = {
+                -- default = 'claude-3-sonnet-20240229',
+                default = 'starcoder2:3b',
+              },
+            },
+          })
+        end,
+      },
+      strategies = {
+        chat = {
+          adapter = 'ollama',
+        },
+        inline = {
+          adapter = 'ollama',
+        },
+        agent = {
+          adapter = 'ollama',
+        },
+      },
+    },
+  },
 
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
@@ -880,12 +962,12 @@ require('lazy').setup({
   --  Here are some example plugins that I've included in the Kickstart repository.
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
-  -- require 'kickstart.plugins.debug',
-  -- require 'kickstart.plugins.indent_line',
-  -- require 'kickstart.plugins.lint',
-  -- require 'kickstart.plugins.autopairs',
-  -- require 'kickstart.plugins.neo-tree',
-  -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
+  require 'kickstart.plugins.debug',
+  require 'kickstart.plugins.indent_line',
+  require 'kickstart.plugins.lint',
+  require 'kickstart.plugins.autopairs',
+  require 'kickstart.plugins.neo-tree',
+  require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
